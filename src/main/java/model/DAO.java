@@ -2,10 +2,12 @@ package model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DAO {
- 
 
 	public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
 	public static final String URL = "jdbc:mysql://localhost:3306/dbagenda?useTimezone=true&serverTimezone=UTC";
@@ -13,9 +15,9 @@ public class DAO {
 	public static final String USER_PASSWD = "admin";
 
 	Connection con;
-	
+
 	public static Connection getConnection() {
-		
+
 		Connection con = null;
 		try {
 			Class.forName(DRIVER); // força o carregamento do driver
@@ -26,24 +28,49 @@ public class DAO {
 			System.out.println("Não pode conectar:" + e.getMessage());
 		} catch (ClassNotFoundException e) {
 			System.out.println("Driver não encontrado!");
-			
+
 		}
 		return con;
 	}
-	
-	
-/*	
-	public void testeConexao() {
+
+	public void inserirContato(JavaBeans contato) {
+		String create = "insert into contatos (nome,fone,email) values (?,?,?)";
 		try {
 			Connection con = getConnection();
-			System.out.println(con);
+			PreparedStatement pst = con.prepareStatement(create);
+			pst.setString(1, contato.getNome());
+			pst.setString(2, contato.getFone());
+			pst.setString(3, contato.getEmail());
+			pst.executeUpdate();
 			con.close();
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
-*/
-	
-	
-	
+
+	public ArrayList<JavaBeans> listarContatos() {
+		ArrayList<JavaBeans> contatos = new ArrayList<>();
+		String read = "SELECT * FROM CONTATOS ORDER BY NOME";
+		try {
+			Connection con = getConnection();
+			PreparedStatement pst = con.prepareStatement(read);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				String idcon = rs.getString(1);
+				String nome = rs.getString(2);
+				String fone = rs.getString(3);
+				String email = rs.getString(4);
+				contatos.add(new JavaBeans(idcon, nome, fone, email));
+
+			}
+			con.close();
+			return contatos;
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
+
+	}
+
 }
