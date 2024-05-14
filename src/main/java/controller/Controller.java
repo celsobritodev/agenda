@@ -12,39 +12,76 @@ import model.JavaBeans;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@WebServlet(urlPatterns = { "/Controller", "/main", "/insert", "/select", "/update" })
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Controller.
+ */
+@WebServlet(urlPatterns = { "/Controller", "/main", "/insert", "/select", "/update","/delete","/report"})
 public class Controller extends HttpServlet {
+	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The dao. */
 	DAO dao = new DAO();
+	
+	/** The contato. */
 	JavaBeans contato = new JavaBeans();
 
+	/**
+	 * Instantiates a new controller.
+	 */
 	public Controller() {
 		super();
 
 	}
 
+	/**
+	 * Do get.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String action = request.getServletPath();
-		System.out.println(action);
+	
 		if (action.equals("/main")) {
 			contatos(request, response);
 		} else if (action.equals("/insert")) {
-			novoContato(request, response);
+			adicionarContato(request, response);
 
 		} else if (action.equals("/select")) {
 			listarContato(request, response);
 
 		} else if (action.equals("/update")) {
 			editarContato(request, response);
+		} else if (action.equals("/delete")) {
+		 	removerContato(request, response);
+		}else if (action.equals("/report")) {
+		 	gerarRelatorio(request, response);
 		}
-
 		else {
 			response.sendRedirect("index.html");
 		}
 	}
 
+	/**
+	 * Contatos.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	protected void contatos(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		ArrayList<JavaBeans> lista = dao.listarContatos();
@@ -61,7 +98,15 @@ public class Controller extends HttpServlet {
 
 	}
 
-	protected void novoContato(HttpServletRequest request, HttpServletResponse response)
+	/**
+	 * Adicionar contato.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	protected void adicionarContato(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// System.out.println(request.getParameter("nome"));
 		// System.out.println(request.getParameter("fone"));
@@ -74,10 +119,18 @@ public class Controller extends HttpServlet {
 
 	}
 
+	/**
+	 * Listar contato.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	protected void listarContato(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String idcon = request.getParameter("idcon");
-		contato.setIdcon(idcon);
+	
+		contato.setIdcon(request.getParameter("idcon"));
 		dao.selecionarContato(contato);
 		request.setAttribute("idcon", contato.getIdcon());
 		request.setAttribute("nome", contato.getNome());
@@ -88,6 +141,14 @@ public class Controller extends HttpServlet {
 
 	}
 
+	/**
+	 * Editar contato.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	protected void editarContato(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		contato.setIdcon(request.getParameter("idcon"));
@@ -97,4 +158,69 @@ public class Controller extends HttpServlet {
 		dao.alterarContato(contato);
 		response.sendRedirect("main");
 	}
+	
+	
+	/**
+	 * Remover contato.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	protected void removerContato(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		contato.setIdcon(request.getParameter("idcon"));
+		dao.deletarContato(contato);
+		response.sendRedirect("main");
+	//	System.out.println(idcon);
+		
+	//	response.sendRedirect("main");
+	}
+	
+	/**
+	 * Gerar relatorio.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws ServletException the servlet exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	protected void gerarRelatorio(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+	
+		Document documento = new Document();
+		try {
+			response.setContentType("application/pdf");
+			response.addHeader("Content-Disposition","inline;filename="+"contatos.pdf");
+			PdfWriter.getInstance(documento,response.getOutputStream());
+			documento.open();
+			documento.add(new Paragraph("Lista de contatos"));
+			documento.add(new Paragraph(" "));
+			PdfPTable tabela = new PdfPTable(3);
+			PdfPCell col1 = new PdfPCell ( new Paragraph("Nome"));  
+			PdfPCell col2 = new PdfPCell ( new Paragraph("Fone"));
+			PdfPCell col3 = new PdfPCell ( new Paragraph("E-mail"));
+			tabela.addCell(col1);
+			tabela.addCell(col2);
+			tabela.addCell(col3);
+			ArrayList<JavaBeans> lista = dao.listarContatos();
+			for ( int i=0; i<lista.size(); i++ ) {
+				tabela.addCell(lista.get(i).getNome());
+				tabela.addCell(lista.get(i).getFone());
+				tabela.addCell(lista.get(i).getEmail());
+			}
+			documento.add(tabela);
+			
+			documento.close();
+		} catch (Exception e) {
+			System.out.println(e);
+			documento.close();
+		}
+		
+		response.sendRedirect("main");
+	
+	}	
 }
+

@@ -7,15 +7,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class DAO.
+ */
 public class DAO {
 
+	/** The Constant DRIVER. */
 	public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+	
+	/** The Constant URL. */
 	public static final String URL = "jdbc:mysql://localhost:3306/dbagenda?useTimezone=true&serverTimezone=UTC";
+	
+	/** The Constant USER_LOGIN. */
 	public static final String USER_LOGIN = "root";
+	
+	/** The Constant USER_PASSWD. */
 	public static final String USER_PASSWD = "admin";
 
+	/** The con. */
 	Connection con;
 
+	/**
+	 * Gets the connection.
+	 *
+	 * @return the connection
+	 */
 	public static Connection getConnection() {
 
 		Connection con = null;
@@ -33,6 +50,11 @@ public class DAO {
 		return con;
 	}
 
+	/**
+	 * Inserir contato.
+	 *
+	 * @param contato the contato
+	 */
 	public void inserirContato(JavaBeans contato) {
 		String create = "insert into contatos (nome,fone,email) values (?,?,?)";
 		try {
@@ -49,6 +71,11 @@ public class DAO {
 		}
 	}
 
+	/**
+	 * Listar contatos.
+	 *
+	 * @return the array list
+	 */
 	public ArrayList<JavaBeans> listarContatos() {
 		ArrayList<JavaBeans> contatos = new ArrayList<>();
 		String read = "SELECT * FROM CONTATOS ORDER BY NOME";
@@ -74,6 +101,11 @@ public class DAO {
 	}
 	
 	
+	/**
+	 * Selecionar contato.
+	 *
+	 * @param contato the contato
+	 */
 	public void selecionarContato(JavaBeans contato) {
 		String read2 = "SELECT * FROM CONTATOS WHERE IDCON = ?";
 		try {
@@ -95,11 +127,16 @@ public class DAO {
 	}
 	
 	
+	/**
+	 * Alterar contato.
+	 *
+	 * @param contato the contato
+	 */
 	public void alterarContato(JavaBeans contato) {
-		String create = "update contatos set nome=?,fone=?,email=? where idcon=?";
+		String update = "update contatos set nome=?,fone=?,email=? where idcon=?";
         try {
 			Connection con = getConnection();
-			PreparedStatement pst = con.prepareStatement(create);
+			PreparedStatement pst = con.prepareStatement(update);
 			pst.setString(1, contato.getNome());
 			pst.setString(2, contato.getFone());
 			pst.setString(3, contato.getEmail());
@@ -109,6 +146,25 @@ public class DAO {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}	
+	}
+	
+	/**
+	 * Deletar contato.
+	 *
+	 * @param contato the contato
+	 */
+	public void deletarContato(JavaBeans contato) {
+		String delete = "DELETE FROM CONTATOS WHERE IDCON=?";
+		try {
+			Connection con = getConnection();
+			PreparedStatement pst = con.prepareStatement(delete);
+            pst.setString(1,contato.getIdcon());
+            pst.executeUpdate();
+            con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+			// TODO: handle exception
+		}
 	}
 
 }

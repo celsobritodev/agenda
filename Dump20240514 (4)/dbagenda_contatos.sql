@@ -37,7 +37,7 @@ CREATE TABLE `contatos` (
 
 LOCK TABLES `contatos` WRITE;
 /*!40000 ALTER TABLE `contatos` DISABLE KEYS */;
-INSERT INTO `contatos` VALUES (1,'Bill Gates','99999-1111','bill@outlook.com'),(2,'Linus Torvalds','99999-7777','tux@email.com'),(3,'Jose de Assis Filho','99999-8888','jose@email.com'),(4,'Leandro Ramos','9999-1234','leandro@email.com'),(5,'Robson Vaamonde','99999-3636','vava@email.com'),(6,'Sirlene Sanches Gomez','99999-1234','ss@email.com'),(7,'Bruce Wane','99999-0000','batman@email.com'),(8,'Jose de Assis do Brasil','99999-8888','jose@email.com'),(9,'Bruce Wane Neto','99999-0000','batman@email.com');
+INSERT INTO `contatos` VALUES (1,'Bill Gates','99999-1111','bill@outlook.com'),(2,'Linus Torvalds','99999-7777','tux@email.com'),(3,'Jose de Assis Filho','99999-8888','jose@email.com'),(4,'Leandro Ramos','9999-1234','leandro@email.com'),(5,'Robson Vaamonde','99999-3636','vava@email.com'),(6,'Sirlene Sanches Gomez','99999-1234','ss@email.com'),(7,'Bruce Wane','99999-0000','batman@email.com'),(8,'Jose de Assis do Brasil','99999-8888','jose@email.com');
 /*!40000 ALTER TABLE `contatos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-13 21:21:35
+-- Dump completed on 2024-05-14 19:49:32
