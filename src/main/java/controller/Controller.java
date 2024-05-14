@@ -12,7 +12,7 @@ import model.JavaBeans;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@WebServlet(urlPatterns = { "/Controller", "/main","/insert","/select" })
+@WebServlet(urlPatterns = { "/Controller", "/main", "/insert", "/select", "/update" })
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -27,16 +27,20 @@ public class Controller extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String action = request.getServletPath();
-    	System.out.println(action);
+		System.out.println(action);
 		if (action.equals("/main")) {
 			contatos(request, response);
 		} else if (action.equals("/insert")) {
-			novoContato(request,response);
-			
-		}  else if (action.equals("/select")) {
-			listarContato(request,response);
-			
-		}else {
+			novoContato(request, response);
+
+		} else if (action.equals("/select")) {
+			listarContato(request, response);
+
+		} else if (action.equals("/update")) {
+			editarContato(request, response);
+		}
+
+		else {
 			response.sendRedirect("index.html");
 		}
 	}
@@ -45,50 +49,52 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		ArrayList<JavaBeans> lista = dao.listarContatos();
 		request.setAttribute("contatos", lista);
-	    RequestDispatcher rd = request.getRequestDispatcher("agenda.jsp");
-        rd.forward(request, response);	    
-/*		
-		for (int i=0; i<lista.size(); i++) {
-			System.out.println(lista.get(i).getIdcon());
-			System.out.println(lista.get(i).getNome());
-			System.out.println(lista.get(i).getFone());
-			System.out.println(lista.get(i).getEmail());
-				}
-*/			
-			
-	
+		RequestDispatcher rd = request.getRequestDispatcher("agenda.jsp");
+		rd.forward(request, response);
+		/*
+		 * for (int i=0; i<lista.size(); i++) {
+		 * System.out.println(lista.get(i).getIdcon());
+		 * System.out.println(lista.get(i).getNome());
+		 * System.out.println(lista.get(i).getFone());
+		 * System.out.println(lista.get(i).getEmail()); }
+		 */
 
 	}
-	
+
 	protected void novoContato(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	//	System.out.println(request.getParameter("nome"));
-	//	System.out.println(request.getParameter("fone"));
-	//	System.out.println(request.getParameter("email"));
+		// System.out.println(request.getParameter("nome"));
+		// System.out.println(request.getParameter("fone"));
+		// System.out.println(request.getParameter("email"));
 		contato.setNome(request.getParameter("nome"));
 		contato.setFone(request.getParameter("fone"));
 		contato.setEmail(request.getParameter("email"));
 		dao.inserirContato(contato);
 		response.sendRedirect("main");
-		
 
 	}
-	
-	
+
 	protected void listarContato(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	   String idcon = request.getParameter("idcon");
-	   contato.setIdcon(idcon);
-	   dao.selecionarContato(contato);
-	   request.setAttribute("idcon", contato.getIdcon());
-	   request.setAttribute("nome", contato.getNome());
-	   request.setAttribute("fone", contato.getFone());
-	   request.setAttribute("email", contato.getEmail());
-	   RequestDispatcher rd = request.getRequestDispatcher("editar.jsp");
-       rd.forward(request, response);  			   
-	
+		String idcon = request.getParameter("idcon");
+		contato.setIdcon(idcon);
+		dao.selecionarContato(contato);
+		request.setAttribute("idcon", contato.getIdcon());
+		request.setAttribute("nome", contato.getNome());
+		request.setAttribute("fone", contato.getFone());
+		request.setAttribute("email", contato.getEmail());
+		RequestDispatcher rd = request.getRequestDispatcher("editar.jsp");
+		rd.forward(request, response);
 
 	}
 
-
+	protected void editarContato(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		contato.setIdcon(request.getParameter("idcon"));
+		contato.setNome(request.getParameter("nome"));
+		contato.setFone(request.getParameter("fone"));
+		contato.setEmail(request.getParameter("email"));
+		dao.alterarContato(contato);
+		response.sendRedirect("main");
+	}
 }
